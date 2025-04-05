@@ -13,7 +13,7 @@ import (
 
 type config struct {
 	numTimes       int
-	pageNameToMake string
+	pathToSaveHtml string
 }
 
 func main() {
@@ -67,7 +67,7 @@ func parseArgs(w io.Writer, args []string) (config, error) {
 	fset.SetOutput(w)
 
 	fset.IntVar(&c.numTimes, "n", 0, "Number of times to greet")
-	fset.StringVar(&c.pageNameToMake, "o", "", "Page name to make")
+	fset.StringVar(&c.pathToSaveHtml, "o", "", "Path to save the html file")
 	err := fset.Parse(args)
 	if err != nil {
 		return c, err
@@ -78,10 +78,9 @@ func parseArgs(w io.Writer, args []string) (config, error) {
 	return c, nil
 }
 
-func makeGreeterHtmlPage(c config, savePath string, name string) error {
+func makeGreeterHtmlPage(c config, name string) error {
 	var tmpl *template.Template
 	var err error
-	tmplName := fmt.Sprintf("%s.gohtml", c.pageNameToMake)
 	tmplContent := `
 		{{define "Name"}}
 		<!DOCTYPE html>
@@ -110,7 +109,7 @@ func makeGreeterHtmlPage(c config, savePath string, name string) error {
 		return err
 	}
 
-	err = os.WriteFile(savePath+tmplName, filew.Bytes(), 0644)
+	err = os.WriteFile(c.pathToSaveHtml, filew.Bytes(), 0666)
 	if err != nil {
 		fmt.Errorf("error writing file: %v", err)
 		return err
@@ -131,8 +130,8 @@ func runCmd(r io.Reader, w io.Writer, c config) error {
 		return err
 	}
 
-	if c.pageNameToMake != "" {
-		err = makeGreeterHtmlPage(c, "./", name)
+	if c.pathToSaveHtml != "" {
+		err = makeGreeterHtmlPage(c, name)
 		if err != nil {
 			return err
 		}
