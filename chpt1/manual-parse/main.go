@@ -110,7 +110,7 @@ func runCmd(r io.Reader, w io.Writer, c config) error {
 }
 
 func greetUser(c config, name string, w io.Writer) {
-	msg := fmt.Sprintf("Leuk u te ontmoeten %s\n", name)
+	msg := fmt.Sprintf("leuk u te ontmoeten %s\n", name)
 	for range c.numTimes {
 		io.WriteString(w, msg)
 	}
