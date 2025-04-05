@@ -110,16 +110,12 @@ func makeGreeterHtmlPage(c config, savePath string, name string) error {
 		return err
 	}
 
-	os.WriteFile(savePath+tmplName, filew.Bytes(), 0644)
-
+	err = os.WriteFile(savePath+tmplName, filew.Bytes(), 0644)
+	if err != nil {
+		fmt.Errorf("error writing file: %v", err)
+		return err
+	}
 	return nil
-	// tmpl, err = template.New("greeter").Parse(tmplStr)
-	// if err != nil {
-	// 	fmt.Errorf("error creating template: %v", err)
-	// 	return
-	// }
-
-	// t.ExecuteTemplate(os.Stdout, "T", "<script>alert('you have been pwned')</script>")
 }
 
 func validateArgs(c config) error {
