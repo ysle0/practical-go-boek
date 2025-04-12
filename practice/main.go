@@ -9,5 +9,6 @@ func main() {
 
 	//RunErrors()
 	//RunGenerics()
-	RunConcurrency()
+	//RunConcurrency()
+	RunConcurrency2()
 }
