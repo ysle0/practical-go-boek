@@ -1,40 +1,49 @@
 package handlerWrap
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 )
 
-// Define an interface for the required logger method(s).
 type LoggerConstraint interface {
 	GetLogger() *log.Logger
 }
 
-// Use the new LoggerConstraint for the type parameter T.
 type Wrapper[T LoggerConstraint] struct {
-	Shared     *T
-	UseMeasure bool
-	Handler    func(w http.ResponseWriter, r *http.Request, shared *T)
+	Shared  *T
+	Handler func(w http.ResponseWriter, r *http.Request, shared *T)
 }
 
 func (h Wrapper[T]) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	var startTime time.Time
-	if h.UseMeasure {
-		startTime = time.Now()
-	}
 	h.Handler(w, r, h.Shared)
-	if h.UseMeasure {
-		endTime := time.Since(startTime).Seconds()
+}
 
-		// Call Printf directly on the dereferenced pointer *T,
-		// which is guaranteed to have the Printf method due to the constraint.
-		// Add a nil check for safety.
-		if h.Shared != nil {
-			(*h.Shared).GetLogger().Printf(
+func LoggingMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			startTime := time.Now()
+			h.ServeHTTP(w, r)
+			endTime := time.Since(startTime).Seconds()
+			log.Printf(
 				"path=%s, method=%s, duration=%f",
 				r.URL.Path, r.Method, endTime)
-		}
-	}
+		},
+	)
+}
+
+func PanicMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if rval := recover(); rval != nil {
+					log.Println("panic: ", rval)
+					w.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprintf(w, "Unexpected server error")
+				}
+			}()
+			h.ServeHTTP(w, r)
+		},
+	)
 }
