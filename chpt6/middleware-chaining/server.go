@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ysle0/chpt6/handlerWrap"
+	"github.com/ysle0/chpt6/middleware"
 )
 
 func main() {
@@ -13,8 +14,9 @@ func main() {
 
 	route(mx, &handlerShared)
 
-	mmx := handlerWrap.LoggingMiddleware(
-		handlerWrap.PanicMiddleware(mx),
+	mmx := middleware.Chain(mx,
+		middleware.LogMiddleware,
+		middleware.PanicMiddleware,
 	)
 
 	err := http.ListenAndServe(":8080", mmx)
