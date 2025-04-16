@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/ysle0/chpt6/middleware"
+	"github.com/ysle0/chpt6/middleware-chaining/middleware"
 )
 
 func main() {

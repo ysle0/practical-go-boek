@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/ysle0/chpt6/middleware-chaining/handler"
 )
 
 func TestApiHandler(t *testing.T) {
@@ -15,7 +17,7 @@ func TestApiHandler(t *testing.T) {
 	b := new(bytes.Buffer)
 	shared := NewHandlerShared(b)
 
-	Index(w, r, &shared)
+	handler.Index(w, r, &shared)
 
 	resp := w.Result()
 	body, err := io.ReadAll(resp.Body)
