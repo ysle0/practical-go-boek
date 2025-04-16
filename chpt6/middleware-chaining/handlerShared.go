@@ -1,21 +1,17 @@
 package main
 
 import (
+	"io"
 	"log"
-	"os"
 )
 
 type HandlerShared struct {
 	l *log.Logger
 }
 
-func NewHandlerShared() HandlerShared {
+func NewHandlerShared(w io.Writer) HandlerShared {
 	return HandlerShared{
-		l: log.New(
-			os.Stdout,
-			"",
-			log.LstdFlags|log.Lshortfile|log.Ltime|log.Lmicroseconds,
-		),
+		l: log.New(w, "", log.LstdFlags|log.Lshortfile|log.Ltime|log.Lmicroseconds),
 	}
 }
 
